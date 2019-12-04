@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import Contact from '../components/Contact'
+
 export default function Chat() {
   return (
     <View style={styles.container}>
-      <Text>Chat</Text>
+      <Contact/>
+      <Contact/>
     </View>
   );
 }
