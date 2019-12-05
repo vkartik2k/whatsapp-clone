@@ -8,11 +8,11 @@ var width = Dimensions.get('window').width;
 export default class Contact extends React.Component {
 
   state = {
-    modalVisible: false,
+    display: false,
   };
 
   _onPressButton = () => {
-    this.setState({modalVisible: true});
+    this.setState({ display: true });
   }
   render() {
     return (
@@ -20,7 +20,9 @@ export default class Contact extends React.Component {
         onPress={this._onPressButton}
         background={TouchableNativeFeedback.SelectableBackground()}>
         <View style={styles.container}>
-          <ChatModal visible={this.state.modalVisible}/>
+          <ChatModal
+            display={this.state.display}
+            closeDisplay={() => this.setState({ display: false })} />
           <Image style={styles.displayPicture} source={require('../assets/defaultDp.png')} />
           <View style={styles.textContainer}>
             <View style={styles.subTextContainer}>

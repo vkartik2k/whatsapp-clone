@@ -6,22 +6,29 @@ export default function Header() {
     <View style={styles.container}>
       <Text style={styles.title}>WhatsApp</Text>
       <View style={styles.btnContainer}>
-        <TouchableNativeFeedback
-          background={TouchableNativeFeedback.SelectableBackground()}
-        >
-          <View style={styles.btnImgContainer}>
-            <Image source={require('../assets/search.png')} style={styles.btnImg} />
-          </View>
+        <View style={{ borderRadius: 5, overflow: 'hidden' }}>
+          <TouchableNativeFeedback
+            background={TouchableNativeFeedback.Ripple('#FFFFFF', true)}
+          >
+            <View style={styles.btnImgContainer}>
+              <Image source={require('../assets/search.png')} style={styles.btnImg} />
+            </View>
 
-        </TouchableNativeFeedback>
-        <TouchableNativeFeedback
-          background={TouchableNativeFeedback.SelectableBackground()}
-        >
-          <View style={styles.btnImgContainer}>
-            <Image source={require('../assets/dotMenu.png')} style={styles.btnImg} />
-          </View>
+          </TouchableNativeFeedback>
+        </View>
+        <View style={{ borderRadius: 5, overflow: 'hidden' }}>
+          <TouchableNativeFeedback
+            background={TouchableNativeFeedback.Ripple('#FFFFFF', true)}
+          >
+            <View style={styles.btnImgContainer}>
+              <Image source={require('../assets/dotMenu.png')} style={styles.btnImg} />
+            </View>
 
-        </TouchableNativeFeedback>
+          </TouchableNativeFeedback>
+        </View>
+
+
+
       </View>
 
     </View>
@@ -55,7 +62,4 @@ const styles = StyleSheet.create({
     height: 25,
     margin: 10,
   },
-  btnImgContainer:{
-    borderRadius: 50
-  }
 });
