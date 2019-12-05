@@ -4,9 +4,7 @@ import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 import { FlatList } from 'react-native-gesture-handler';
 
-
 import Contact from '../components/Contact'
-
 
 export default class Chat extends React.Component {
   constructor() {
@@ -30,7 +28,6 @@ export default class Chat extends React.Component {
       fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Emails]
     });
 
-    console.log(data);
     this.setState({ contacts: data, inMemoryContacts: data, isLoading: false });
   };
 
@@ -41,15 +38,6 @@ export default class Chat extends React.Component {
 
   renderItem = ({ item }) => (
     <Contact name={item.firstName + " " + (item.lastName? item.lastName : "")} lastMsg={"Hello"} chatTime={"21:56"} />
-    // <View style={{ minHeight: 70, padding: 5 }}>
-    //   <Text style={{ color: '#bada55', fontWeight: 'bold', fontSize: 26 }}>
-    //     {item.firstName + ' '}
-    //     {item.lastName}
-    //   </Text>
-    //   <Text style={{ color: 'white', fontWeight: 'bold' }}>
-    //     {item.phoneNumbers[0].digits}
-    //   </Text>
-    // </View>
   );
 
   render() {

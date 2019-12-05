@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import SplitScreen from './screens/SplitScreen'
 import Header from './components/Header'
 import Chat from './screens/Chat'
+import ChatModal from "./screens/ChatModal";
 
 export default function App() {
   return (

@@ -1,15 +1,26 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableNativeFeedback, Image, Dimensions } from 'react-native';
 
+import ChatModal from '../screens/ChatModal'
+
 var width = Dimensions.get('window').width;
 
 export default class Contact extends React.Component {
+
+  state = {
+    modalVisible: false,
+  };
+
+  _onPressButton = () => {
+    this.setState({modalVisible: true});
+  }
   render() {
     return (
       <TouchableNativeFeedback
         onPress={this._onPressButton}
         background={TouchableNativeFeedback.SelectableBackground()}>
         <View style={styles.container}>
+          <ChatModal visible={this.state.modalVisible}/>
           <Image style={styles.displayPicture} source={require('../assets/defaultDp.png')} />
           <View style={styles.textContainer}>
             <View style={styles.subTextContainer}>

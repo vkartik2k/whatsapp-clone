@@ -1,17 +1,27 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableNativeFeedback, Image } from 'react-native';
 
 export default function Header() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>WhatsApp</Text>
       <View style={styles.btnContainer}>
-        <TouchableOpacity style={styles.btnImgContainer} activeOpacity={0.5}>
-          <Image source={require('../assets/search.png')} style={styles.btnImg} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnImgContainer} activeOpacity={0.5}>
-          <Image source={require('../assets/dotMenu.png')} style={styles.btnImg} />
-        </TouchableOpacity>
+        <TouchableNativeFeedback
+          background={TouchableNativeFeedback.SelectableBackground()}
+        >
+          <View style={styles.btnImgContainer}>
+            <Image source={require('../assets/search.png')} style={styles.btnImg} />
+          </View>
+
+        </TouchableNativeFeedback>
+        <TouchableNativeFeedback
+          background={TouchableNativeFeedback.SelectableBackground()}
+        >
+          <View style={styles.btnImgContainer}>
+            <Image source={require('../assets/dotMenu.png')} style={styles.btnImg} />
+          </View>
+
+        </TouchableNativeFeedback>
       </View>
 
     </View>
@@ -43,6 +53,9 @@ const styles = StyleSheet.create({
   btnImg: {
     width: 25,
     height: 25,
-    marginLeft: 10,
+    margin: 10,
+  },
+  btnImgContainer:{
+    borderRadius: 50
   }
 });
