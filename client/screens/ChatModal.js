@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, ImageBackground, Image, TouchableNativeFeedback, Modal } from 'react-native';
+import { StyleSheet, Text, View, TextInput, ImageBackground, Image, TouchableNativeFeedback, Modal, BackHandler } from 'react-native';
 
 class RecMsg extends React.Component {
   render() {
@@ -28,11 +28,30 @@ class SendMsg extends React.Component {
 }
 
 export default class ChatModal extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+  }
+
+  handleBackButtonClick() {
+    this.props.closeDisplay();
+    return true;
+  }
+
   render() {
     return (
       <Modal
         visible={this.props.display}
-        animationType = 'slide'
+        animationType='slide'
         onRequestClose={this.display}
       >
         <ImageBackground source={require('../assets/background.png')} style={{ flex: 1 }}>
@@ -66,7 +85,6 @@ export default class ChatModal extends React.Component {
                 <TextInput style={styles.input} placeholder="Type a message" />
                 <Image style={styles.camIcon} source={require('../assets/camera.png')} />
               </View>
-
               <View >
                 <TouchableNativeFeedback>
                   <View style={styles.mikeContainer}>
