@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
+import { AsyncStorage } from 'react-native';
 
-export default class App extends React.Component {
+export default class Signup extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -22,22 +23,27 @@ export default class App extends React.Component {
       Alert.alert('Invalid number', 'The number entered is invalid.')
     }
     else {
-      let response = fetch('http://localhost:3000/api/register', {
+      fetch('http://192.168.43.161:3000/api/register', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          phone: this.state.User
+          phone: this.state.User.toString()
         }),
-      }).then((response) => response.json());
-      if (response.status === 201) {
-        this._storeData(this.state.User)
-      }
-      else {
-        Alert.alert('Already Exist', 'The account with number is already active on other device.')
-      }
+      }).then((response) => {
+        response = response.json()
+        response.then(response => {
+          console.log(response)
+          if (response.status === 201 || response.status === 202) {
+            this._storeData(this.state.User)
+          }
+          else {
+            Alert.alert('Already Exist', 'The account with number is already active on other device.')
+          }
+        })
+      }).catch((err) => console.error(err));
     }
   }
 

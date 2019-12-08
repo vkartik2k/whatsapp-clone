@@ -13,7 +13,6 @@ export default function Header() {
             <View style={styles.btnImgContainer}>
               <Image source={require('../assets/search.png')} style={styles.btnImg} />
             </View>
-
           </TouchableNativeFeedback>
         </View>
         <View style={{ borderRadius: 5, overflow: 'hidden' }}>
@@ -26,11 +25,7 @@ export default function Header() {
 
           </TouchableNativeFeedback>
         </View>
-
-
-
       </View>
-
     </View>
   );
 }
@@ -41,7 +36,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#075E54',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 90,
+    height: 60,
     alignSelf: 'stretch',
     paddingLeft: 10,
     paddingRight: 10,
