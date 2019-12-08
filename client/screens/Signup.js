@@ -10,14 +10,6 @@ export default class Signup extends React.Component {
     };
   }
 
-  _storeData = async (phone) => {
-    try {
-      await AsyncStorage.setItem('User', phone);
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   _onBtnClick = () => {
     if (this.state.User.length != 10) {
       Alert.alert('Invalid number', 'The number entered is invalid.')
@@ -37,7 +29,7 @@ export default class Signup extends React.Component {
         response.then(response => {
           console.log(response)
           if (response.status === 201 || response.status === 202) {
-            this._storeData(this.state.User)
+            this.props._storeData(this.state.User)
           }
           else {
             Alert.alert('Already Exist', 'The account with number is already active on other device.')
