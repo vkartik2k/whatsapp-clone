@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
-import { AsyncStorage } from 'react-native';
 
 export default class Signup extends React.Component {
   constructor() {

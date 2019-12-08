@@ -12,13 +12,15 @@ const io = socketio(server)
 app.use(express.json())
 app.use(express.urlencoded({extenstion:true}))
 
+let currentConnection = []
+
 io.on("connection", function(socket){
     console.log("Connection successful")
-    // socket.on('connected', function(data){
-    //     console.log(data.phone)
-    //     console.log("avada kadavra")
-    //     currentConnection.push(data.phone)
-    // })
+    socket.on('connected', function(data){
+        console.log(data.phone)
+        console.log("avada kadavra")
+        currentConnection.push(data.phone)
+    })
 })
 
 app.use('/api', api)
