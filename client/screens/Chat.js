@@ -17,11 +17,15 @@ export default class Chat extends React.Component {
   }
 
   loadCurrentChats = () => {
+    console.log(db)
     db.transaction(tx => {
       tx.executeSql(
         `SELECT * FROM recent ORDERBY recieveOn DESC;`,
         [],
-        (_, { rows: { _array } }) => this.setState({ contacts: _array })
+        (_, { rows: { _array } }) => {
+          this.setState({ contacts: _array})
+          console.log("Joker : majak hai kya?")
+        }
       );
     });
     this.setState({ isLoading: false });

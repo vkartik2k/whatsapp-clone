@@ -10,6 +10,8 @@ import Signup from './screens/Signup'
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("db.db");
 
+console.disableYellowBox = true;
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -19,15 +21,24 @@ export default class App extends React.Component {
   }
 
   _createDb = () => {
+    console.log("DB CREATING")
     db.transaction(tx => {
       tx.executeSql(
         "CREATE TABLE IF NOT EXISTS recent (mid integer primary key not null, lastMsg text, chatTime text, unreadCount text);"
       );
+    }, function (err) {
+      console.error(err);
+    }, function () {
+      console.log("DATABASE Created Successful")
     });
     db.transaction(tx => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS message (mid integer primary key not null, content text, to text, from text, deliveredOn text, recievedOn text, readOn text);"
+        "CREATE TABLE IF NOT EXISTS message (mid integer primary key not null, content text, sendTo text, sendfrom text, deliveredOn text, recievedOn text, readOn text);"
       );
+    }, function (err) {
+      console.error(err);
+    }, function () {
+      console.log("DATABASE Created Successful")
     });
   }
 
@@ -37,7 +48,7 @@ export default class App extends React.Component {
     } catch (error) {
       console.error(error)
     }
-    this.setState({User: phone}); 
+    this.setState({ User: phone });
   };
 
   _retrieveData = async () => {
@@ -46,7 +57,7 @@ export default class App extends React.Component {
       console.log(value)
       if (value !== '' && value != null) {
         this.setState({ User: value });
-        this.socket.emit('connected',{
+        this.socket.emit('connected', {
           phone: this.state.User
         })
         console.log("Emitted!")
@@ -65,7 +76,7 @@ export default class App extends React.Component {
       transports: ['websocket']
     });
 
-    this.socket.on('recieve_msg', function(message){
+    this.socket.on('recieve_msg', function (message) {
       // message = {
       //   mid: 123,
       //   content: "hello",
@@ -79,10 +90,13 @@ export default class App extends React.Component {
 
       db.transaction(
         tx => {
-          tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", [message.mid, message.content, message.to, message.from, message.deliveredOn, message.recievedOn, message.readOn]);
+          // tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", [message.mid, message.content, message.to, message.from, message.deliveredOn, message.recievedOn, message.readOn]);
           tx.executeSql("select * from message", [], (_, { rows }) =>
-            console.log("What the actual ...")
+            console.log(JSON.stringify(rows))
           );
+        },
+        function (err) {
+          console.error(err)
         }
       );
     })

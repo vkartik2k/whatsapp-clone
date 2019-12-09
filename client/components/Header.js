@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, TouchableNativeFeedback, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableNativeFeedback, Image, Dimensions} from 'react-native';
+
+var width = Dimensions.get('window').width;
 
 export default function Header() {
   return (
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     height: 60,
-    alignSelf: 'stretch',
+    width: width,
     paddingLeft: 10,
     paddingRight: 10,
   },

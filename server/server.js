@@ -17,7 +17,7 @@ io.on("connection", function (socket) {
     console.log(data.phone)
   })
   socket.emit('recieve_msg', {
-    mid: 123,
+    mid: 133,
     content: "hello",
     to: "9999999997",
     from: "9999999999",
