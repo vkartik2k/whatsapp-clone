@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import * as Permissions from 'expo-permissions';
+import * as Contacts from 'expo-contacts';
 import { FlatList } from 'react-native-gesture-handler';
 
 import Contact from '../components/Contact'
-
-import * as SQLite from "expo-sqlite";
-const db = SQLite.openDatabase("db.db");
 
 export default class Chat extends React.Component {
   constructor() {
@@ -16,25 +15,29 @@ export default class Chat extends React.Component {
     };
   }
 
-  loadCurrentChats = () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        `SELECT * FROM recent ORDERBY recieveOn DESC;`,
-        [],
-        (_, { rows: { _array } }) => this.setState({ contacts: _array })
-      );
+  loadContacts = async () => {
+    const permission = await Permissions.askAsync(
+      Permissions.CONTACTS
+    );
+
+    if (permission.status !== 'granted') {
+      return;
+    }
+
+    const { data } = await Contacts.getContactsAsync({
+      fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Emails]
     });
-    this.setState({ isLoading: false });
-  }
+
+    this.setState({ contacts: data, inMemoryContacts: data, isLoading: false });
+  };
 
   componentDidMount() {
     this.setState({ isLoading: true });
-    this.loadCurrentChats();
-    console.log("Hello")
+    this.loadContacts();
   }
 
   renderItem = ({ item }) => (
-    <Contact name={item.name} lastMsg={item.lastMsg} chatTime={item.chatTime} />
+    <Contact name={item.firstName + " " + (item.lastName? item.lastName : "")} lastMsg={"Hello"} chatTime={"21:56"} />
   );
 
   render() {
@@ -52,7 +55,7 @@ export default class Chat extends React.Component {
               marginTop: 50
             }}
           >
-            <Text style={{ color: '#bad555' }}>All your recent chats will appear here.</Text>
+            <Text style={{ color: '#bad555' }}>No Contacts Found</Text>
           </View>
         )}
       />

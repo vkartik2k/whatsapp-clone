@@ -7,12 +7,28 @@ import Header from './components/Header'
 import Chat from './screens/Chat'
 import Signup from './screens/Signup'
 
+import * as SQLite from "expo-sqlite";
+const db = SQLite.openDatabase("db.db");
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       User: null,
     };
+  }
+
+  _createDb = () => {
+    db.transaction(tx => {
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS recent (mid integer primary key not null, lastMsg text, chatTime text, unreadCount text);"
+      );
+    });
+    db.transaction(tx => {
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS message (mid integer primary key not null, content text, to text, from text, deliveredOn text, recievedOn text, readOn text);"
+      );
+    });
   }
 
   _storeData = async (phone) => {
@@ -42,9 +58,34 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
+    // Create DB
+    this._createDb();
+
     this.socket = io('http://192.168.43.161:3000', {
       transports: ['websocket']
     });
+
+    this.socket.on('recieve_msg', function(message){
+      // message = {
+      //   mid: 123,
+      //   content: "hello",
+      //   to: "9999999997",
+      //   from : "9999999999",
+      //   deliveredOn: "1575876765747",
+      //   recievedOn : "1575876765747",
+      //   readOn : "575876765747"
+      // }
+      console.log(message)
+
+      db.transaction(
+        tx => {
+          tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", [message.mid, message.content, message.to, message.from, message.deliveredOn, message.recievedOn, message.readOn]);
+          tx.executeSql("select * from message", [], (_, { rows }) =>
+            console.log("What the actual ...")
+          );
+        }
+      );
+    })
     // AsyncStorage.setItem('User', '');
     this._retrieveData();
   }
