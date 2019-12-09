@@ -19,15 +19,10 @@ export default class Chat extends React.Component {
     const permission = await Permissions.askAsync(
       Permissions.CONTACTS
     );
-
-    if (permission.status !== 'granted') {
-      return;
-    }
-
+    if (permission.status !== 'granted') return;
     const { data } = await Contacts.getContactsAsync({
       fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Emails]
     });
-
     this.setState({ contacts: data, inMemoryContacts: data, isLoading: false });
   };
 

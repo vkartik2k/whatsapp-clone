@@ -21,24 +21,42 @@ export default class App extends React.Component {
   }
 
   _createDb = () => {
-    console.log("DB CREATING")
+    // db.transaction(tx => {
+    //   tx.executeSql(
+    //     "DROP TABLE recent;"
+    //   );
+    // }, function (err) {
+    //   console.error(err);
+    // }, function () {
+    //   console.log("Dropped!")
+    // });
+    // db.transaction(tx => {
+    //   tx.executeSql(
+    //     "DROP TABLE message;"
+    //   );
+    // }, function (err) {
+    //   console.error(err);
+    // }, function () {
+    //   console.log("Dropped!")
+    // });
+
     db.transaction(tx => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS recent (mid integer primary key not null, lastMsg text, chatTime text, unreadCount text);"
+        "CREATE TABLE IF NOT EXISTS recent (sendFrom text primary key not null, lastMsg text, chatTime text, unreadCount integer);"
       );
     }, function (err) {
       console.error(err);
     }, function () {
-      console.log("DATABASE Created Successful")
+      console.log("Create recent Successful!")
     });
     db.transaction(tx => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS message (mid integer primary key not null, content text, sendTo text, sendfrom text, deliveredOn text, recievedOn text, readOn text);"
+        `CREATE TABLE IF NOT EXISTS message (mid integer primary key not null, content text, sendTo text, sendfrom text, deliveredOn text, recievedOn text, readOn text);`
       );
     }, function (err) {
       console.error(err);
     }, function () {
-      console.log("DATABASE Created Successful")
+      console.log("Create message Successful!")
     });
   }
 
@@ -54,14 +72,12 @@ export default class App extends React.Component {
   _retrieveData = async () => {
     try {
       const value = await AsyncStorage.getItem('User');
-      console.log(value)
       if (value !== '' && value != null) {
         this.setState({ User: value });
         this.socket.emit('connected', {
           phone: this.state.User
         })
-        console.log("Emitted!")
-        console.log(this.state.User)
+        console.log("Emitted Connect With Device Number :"+this.state.User)
       }
     } catch (error) {
       console.error(error)
@@ -77,22 +93,19 @@ export default class App extends React.Component {
     });
 
     this.socket.on('recieve_msg', function (message) {
-      // message = {
-      //   mid: 123,
-      //   content: "hello",
-      //   to: "9999999997",
-      //   from : "9999999999",
-      //   deliveredOn: "1575876765747",
-      //   recievedOn : "1575876765747",
-      //   readOn : "575876765747"
-      // }
-      console.log(message)
-
       db.transaction(
         tx => {
-          // tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", [message.mid, message.content, message.to, message.from, message.deliveredOn, message.recievedOn, message.readOn]);
-          tx.executeSql("select * from message", [], (_, { rows }) =>
-            console.log(JSON.stringify(rows))
+          tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 
+          [message.mid, message.content, message.to, message.from, message.deliveredOn, message.recievedOn, message.readOn]);
+          tx.executeSql("SELECT * FROM  message", [], (_, { rows }) =>
+            console.log(rows)
+          );
+          tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`, 
+          [message.from, message.content, message.recievedOn , 0]);
+          tx.executeSql(`UPDATE recent SET unreadCount = unreadCount + 1 WHERE sendFrom=?`, 
+          [message.from]);
+          tx.executeSql("SELECT * FROM  recent", [], (_, { rows }) =>
+            console.log(rows)
           );
         },
         function (err) {

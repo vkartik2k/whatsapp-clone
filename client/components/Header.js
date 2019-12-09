@@ -24,7 +24,6 @@ export default function Header() {
             <View style={styles.btnImgContainer}>
               <Image source={require('../assets/dotMenu.png')} style={styles.btnImg} />
             </View>
-
           </TouchableNativeFeedback>
         </View>
       </View>

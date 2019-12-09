@@ -17,28 +17,31 @@ export default class Chat extends React.Component {
   }
 
   loadCurrentChats = () => {
-    console.log(db)
     db.transaction(tx => {
       tx.executeSql(
-        `SELECT * FROM recent ORDERBY recieveOn DESC;`,
+        `SELECT * FROM recent ORDER BY chatTime DESC;`,
         [],
         (_, { rows: { _array } }) => {
           this.setState({ contacts: _array})
-          console.log("Joker : majak hai kya?")
+          console.log("Chat.js :: "+ _array)
         }
       );
+    },function(err){
+      console.error(err)
+    },function(){
+      console.log("Chats.js :: all chats are fetched from db");
+      this.setState({ isLoading: false, contacts: contacts });
+      console.log(this.state.contacts);
     });
-    this.setState({ isLoading: false });
   }
 
   componentDidMount() {
     this.setState({ isLoading: true });
     this.loadCurrentChats();
-    console.log("Hello")
   }
 
   renderItem = ({ item }) => (
-    <Contact name={item.name} lastMsg={item.lastMsg} chatTime={item.chatTime} />
+    <Contact name={item.sendFrom} lastMsg={item.lastMsg} chatTime={item.chatTime} />
   );
 
   render() {
@@ -56,7 +59,7 @@ export default class Chat extends React.Component {
               marginTop: 50
             }}
           >
-            <Text style={{ color: '#bad555' }}>All your recent chats will appear here.</Text>
+            <Text style={{ color: '#7B8788' }}>All your recent chats will appear here.</Text>
           </View>
         )}
       />

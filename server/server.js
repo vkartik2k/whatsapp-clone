@@ -16,15 +16,15 @@ io.on("connection", function (socket) {
   socket.on('connected', function (data) {
     console.log(data.phone)
   })
-  socket.emit('recieve_msg', {
-    mid: 133,
-    content: "hello",
-    to: "9999999997",
-    from: "9999999999",
-    deliveredOn: "1575876765747",
-    recievedOn: "1575876765747",
-    readOn: "575876765747"
-  })
+  // socket.emit('recieve_msg', {
+  //   mid: 133,
+  //   content: "hello",
+  //   to: "9999999997",
+  //   from: "9999999999",
+  //   deliveredOn: "1575876765747",
+  //   recievedOn: "1575876765747",
+  //   readOn: "575876765747"
+  // })
 })
 
 app.use('/api', api)
