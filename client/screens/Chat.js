@@ -23,7 +23,8 @@ export default class Chat extends React.Component {
         [],
         (_, { rows: { _array } }) => {
           this.setState({ contacts: _array})
-          console.log("Chat.js :: "+ _array)
+          console.log("Chat.js :: ")
+          console.log(_array)
         }
       );
     },function(err){

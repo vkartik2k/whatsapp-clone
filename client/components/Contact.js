@@ -6,7 +6,6 @@ import ChatModal from '../screens/ChatModal'
 var width = Dimensions.get('window').width;
 
 export default class Contact extends React.Component {
-
   state = {
     display: false,
   };
@@ -21,8 +20,10 @@ export default class Contact extends React.Component {
         background={TouchableNativeFeedback.SelectableBackground()}>
         <View style={styles.container}>
           <ChatModal
+            name = {this.props.name}
             display={this.state.display}
-            closeDisplay={() => this.setState({ display: false })} />
+            closeDisplay={() => this.setState({ display: false })}
+          />
           <Image style={styles.displayPicture} source={require('../assets/defaultDp.png')} />
           <View style={styles.textContainer}>
             <View style={styles.subTextContainer}>

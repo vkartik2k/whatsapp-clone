@@ -51,7 +51,7 @@ export default class App extends React.Component {
     });
     db.transaction(tx => {
       tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS message (mid integer primary key not null, content text, sendTo text, sendfrom text, deliveredOn text, recievedOn text, readOn text);`
+        `CREATE TABLE IF NOT EXISTS message (mid integer primary key not null, content text, sendTo text, sendFrom text, deliveredOn text, receivedOn text, readOn text);`
       );
     }, function (err) {
       console.error(err);
@@ -95,18 +95,20 @@ export default class App extends React.Component {
     this.socket.on('recieve_msg', function (message) {
       db.transaction(
         tx => {
-          tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 
-          [message.mid, message.content, message.to, message.from, message.deliveredOn, message.recievedOn, message.readOn]);
-          tx.executeSql("SELECT * FROM  message", [], (_, { rows }) =>
-            console.log(rows)
-          );
-          tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`, 
-          [message.from, message.content, message.recievedOn , 0]);
-          tx.executeSql(`UPDATE recent SET unreadCount = unreadCount + 1 WHERE sendFrom=?`, 
-          [message.from]);
-          tx.executeSql("SELECT * FROM  recent", [], (_, { rows }) =>
-            console.log(rows)
-          );
+          // tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 
+          // [message.mid, message.content, message.to, message.from, message.deliveredOn, message.receivedOn, message.readOn]);
+          // tx.executeSql("SELECT * FROM  message", [], (_, { rows }) =>
+          //   console.log(rows)
+          // );
+          if(message.from!== this.state.User){
+            tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`, 
+            [message.from, message.content, message.receivedOn , 0]);
+            tx.executeSql(`UPDATE recent SET unreadCount = unreadCount + 1 WHERE sendFrom=?`, 
+            [message.from]);
+            tx.executeSql("SELECT * FROM  recent", [], (_, { rows }) =>
+              console.log(rows)
+            );
+          }
         },
         function (err) {
           console.error(err)

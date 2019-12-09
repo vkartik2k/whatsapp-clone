@@ -1,5 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, ImageBackground, Image, TouchableNativeFeedback, Modal, BackHandler } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+
+import * as SQLite from "expo-sqlite";
+const db = SQLite.openDatabase("db.db");
 
 class RecMsg extends React.Component {
   render() {
@@ -28,23 +32,50 @@ class SendMsg extends React.Component {
 }
 
 export default class ChatModal extends React.Component {
-
   constructor(props) {
     super(props)
-    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-  }
-
-  componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-  }
-
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+    this.state = {
+      isLoading: false,
+      messages : []
+    }
   }
 
   handleBackButtonClick() {
     this.props.closeDisplay();
     return true;
+  }
+
+  renderItem = ({ item }) => {
+    if(item.sendFrom === this.props.name){
+      return <RecMsg msg={item.content} timeStamp={item.receivedOn} /> 
+    }
+    else{
+      return <SendMsg msg={item.content} timeStamp={item.receivedOn} /> 
+    }
+  };
+
+  loadChats = () => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `SELECT * FROM message WHERE sendFrom=? OR sendTo=? ORDER BY receivedOn DESC;`,
+        [this.props.name, this.props.name],
+        (_, { rows: { _array } }) => {
+          this.setState({ messages: _array})
+          console.log(_array)
+        }
+      );
+    },function(err){
+      console.error(err)
+    },function(){
+      console.log("ChatModal.js :: all chats are fetched from db");
+      this.setState({ isLoading: false });
+      console.log(this.state.messages);
+    });
+  }
+
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    this.loadChats();
   }
 
   render() {
@@ -65,7 +96,7 @@ export default class ChatModal extends React.Component {
                   <Image style={styles.dpImg} source={require('../assets/defaultDp.png')} />
                 </View>
               </TouchableNativeFeedback>
-              <Text style={styles.name}>Mandeep</Text>
+              <Text style={styles.name}>{this.props.name}</Text>
               <TouchableNativeFeedback
                 background={TouchableNativeFeedback.Ripple('#FFFFFF', true)}>
                 <View style={styles.btnImgContainer}>
@@ -74,10 +105,16 @@ export default class ChatModal extends React.Component {
               </TouchableNativeFeedback>
             </View>
             <View style={styles.msgArea}>
-              <SendMsg msg={"Hello"} timeStamp={"21:56"} />
+              <FlatList
+                inverted
+                data={this.state.messages}
+                renderItem={this.renderItem}
+                keyExtractor={(item, index) => index.toString()}
+              />
+              {/* <SendMsg msg={"Hello"} timeStamp={"21:56"} />
               <SendMsg msg={"How are you?"} timeStamp={"21:56"} />
               <SendMsg msg={"what are you doing? Lorem Ipsum lorem lipsum chipsum chipsum hing hing tipsum lal lal lal lal"} timeStamp={"21:56"} />
-              <RecMsg msg={"asdag"} timeStamp={"21:56"} />
+              <RecMsg msg={"asdag"} timeStamp={"21:56"} /> */}
             </View>
             <View style={styles.inputContainer}>
               <View style={styles.inputContainer2}>
