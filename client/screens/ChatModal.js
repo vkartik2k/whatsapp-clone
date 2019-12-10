@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, ImageBackground, Image, TouchableNativeFeedback, Modal, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, TextInput, ImageBackground, Image, TouchableNativeFeedback, Modal } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import { AsyncStorage } from 'react-native';
 
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("db.db");
@@ -35,8 +36,10 @@ export default class ChatModal extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      User: null,
       isLoading: false,
-      messages : []
+      currentMsg : "",
+      messages: []
     }
   }
 
@@ -45,37 +48,66 @@ export default class ChatModal extends React.Component {
     return true;
   }
 
-  renderItem = ({ item }) => {
-    if(item.sendFrom === this.props.name){
-      return <RecMsg msg={item.content} timeStamp={item.receivedOn} /> 
-    }
-    else{
-      return <SendMsg msg={item.content} timeStamp={item.receivedOn} /> 
+  _retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('User');
+      if (value !== '' && value != null) {
+        this.setState({ User: value });
+        this.socket.emit('connected', {
+          phone: this.state.User
+        })
+        console.log("Emitted Connect With Device Number :"+this.state.User)
+      }
+    } catch (error) {
+      console.error(error)
     }
   };
 
-  loadChats = () => {
+  _renderItem = ({ item }) => {
+    if (item.sendFrom === this.props.name) {
+      return <RecMsg msg={item.content} timeStamp={item.receivedOn} />
+    }
+    else {
+      return <SendMsg msg={item.content} timeStamp={item.receivedOn} />
+    }
+  };
+
+  _loadChats = () => {
     db.transaction(tx => {
       tx.executeSql(
         `SELECT * FROM message WHERE sendFrom=? OR sendTo=? ORDER BY receivedOn DESC;`,
         [this.props.name, this.props.name],
         (_, { rows: { _array } }) => {
-          this.setState({ messages: _array})
+          this.setState({ messages: _array })
           console.log(_array)
         }
       );
-    },function(err){
+    }, function (err) {
       console.error(err)
-    },function(){
+    }, function () {
       console.log("ChatModal.js :: all chats are fetched from db");
       this.setState({ isLoading: false });
       console.log(this.state.messages);
     });
   }
 
+  _sendMsg() {
+    console.log("ChatModal.js :: You asked to send message");
+    console.log("Message : " + this.state.currentMsg);
+    this.props.socket.emit('send_msg', {
+      from : this.state.User,
+      to : this.props.name,
+      content : this.state.currentMsg,
+      deliveredOn : Date.now(),
+      receivedOn: '',
+      readOn : ''
+    });
+  }
+
   componentDidMount() {
     this.setState({ isLoading: true });
-    this.loadChats();
+    this._retrieveData();
+    this._loadChats();
   }
 
   render() {
@@ -108,22 +140,24 @@ export default class ChatModal extends React.Component {
               <FlatList
                 inverted
                 data={this.state.messages}
-                renderItem={this.renderItem}
+                renderItem={this._renderItem}
                 keyExtractor={(item, index) => index.toString()}
               />
-              {/* <SendMsg msg={"Hello"} timeStamp={"21:56"} />
-              <SendMsg msg={"How are you?"} timeStamp={"21:56"} />
-              <SendMsg msg={"what are you doing? Lorem Ipsum lorem lipsum chipsum chipsum hing hing tipsum lal lal lal lal"} timeStamp={"21:56"} />
-              <RecMsg msg={"asdag"} timeStamp={"21:56"} /> */}
             </View>
             <View style={styles.inputContainer}>
               <View style={styles.inputContainer2}>
                 <Image style={styles.emojiIcon} source={require('../assets/emoji.png')} />
-                <TextInput style={styles.input} placeholder="Type a message" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Type a message" 
+                  onChangeText={(currentMsg) => this.setState({currentMsg})}
+                />
                 <Image style={styles.camIcon} source={require('../assets/camera.png')} />
               </View>
               <View >
-                <TouchableNativeFeedback>
+                <TouchableNativeFeedback
+                  onPress={this._sendMsg}
+                >
                   <View style={styles.mikeContainer}>
                     <Image style={styles.mikeInp} source={require('../assets/mike.png')} />
                   </View>

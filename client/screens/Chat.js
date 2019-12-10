@@ -42,7 +42,7 @@ export default class Chat extends React.Component {
   }
 
   renderItem = ({ item }) => (
-    <Contact name={item.sendFrom} lastMsg={item.lastMsg} chatTime={item.chatTime} />
+    <Contact socket={this.props.socket} name={item.sendFrom} lastMsg={item.lastMsg} chatTime={item.chatTime} />
   );
 
   render() {

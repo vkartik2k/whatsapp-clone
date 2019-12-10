@@ -20,7 +20,8 @@ export default class Contact extends React.Component {
         background={TouchableNativeFeedback.SelectableBackground()}>
         <View style={styles.container}>
           <ChatModal
-            name = {this.props.name}
+            socket={this.props.socket}
+            name={this.props.name}
             display={this.state.display}
             closeDisplay={() => this.setState({ display: false })}
           />

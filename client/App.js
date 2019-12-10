@@ -92,7 +92,7 @@ export default class App extends React.Component {
       transports: ['websocket']
     });
 
-    this.socket.on('recieve_msg', function (message) {
+    this.socket.on('receive_msg', function (message) {
       db.transaction(
         tx => {
           // tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 
@@ -123,7 +123,7 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         {
-          this.state.User !== null ? <View><Header /><Chat /></View> : <Signup _storeData={this._storeData} />
+          this.state.User !== null ? <View><Header /><Chat socket={this.socket}/></View> : <Signup _storeData={this._storeData} />
         }
       </View>
     )

@@ -1,5 +1,6 @@
-const express = require("express")
+const express = require('express')
 const socketio = require('socket.io')
+const db = require('./database')
 const api = require('./routes/api')
 
 const http = require('http')
@@ -12,41 +13,43 @@ const io = socketio(server)
 app.use(express.json())
 app.use(express.urlencoded({ extenstion: true }))
 
-io.on("connection", function (socket) {
+
+console.log(io.sockets.clients());
+io.on('connection', function (socket) {
   socket.on('connected', function (data) {
-    console.log(data.phone)
+    console.log('New device connected with number '+data.phone)
+    db.Message.findAll({
+      where:{
+        to : data.phone,
+        receivedOn : '',
+      }
+    }).then((d)=>{
+      d.forEach((obj)=>{
+        socket.emit('receive_msg', obj)
+      })
+      db.Message.update({
+        receivedOn : Date.now()
+      },{
+        where : {
+          to : data.phone,
+          receivedOn : '',
+        }
+      })
+    })
+    console.log('All undelivered messages are now delivered to '+ data.phone)
   })
-  socket.emit('recieve_msg', {
-    mid: 134,
-    content: "majak hai kya",
-    to: "9999999996",
-    from: "9999999999",
-    deliveredOn: "1575876765747",
-    receivedOn: "1575876765757",
-    readOn: "575876765747"
-  })
-  socket.emit('recieve_msg', {
-    mid: 135,
-    content: "joker dekhli kya",
-    to: "9999999999",
-    from: "9999999996",
-    deliveredOn: "1575876765747",
-    receivedOn: "1575876765767",
-    readOn: "575876765747"
-  })
-  socket.emit('recieve_msg', {
-    mid: 136,
-    content: "So cool no. we are having",
-    to: "9999999996",
-    from: "9999999999",
-    deliveredOn: "1575876765747",
-    receivedOn: "1575876765777",
-    readOn: "575876765747"
+
+  socket.on('send_msg', function(data){
+    db.Message.create(data).then((message)=>{
+      console.log('New message added to database!')
+    }).catch((error) =>{
+      console.error(error)
+    })
   })
 })
 
 app.use('/api', api)
 
 server.listen(3000, function () {
-  console.log("App running on http://localhost:3000")
+  console.log('App running on http://localhost:3000')
 })

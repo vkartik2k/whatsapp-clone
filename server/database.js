@@ -32,7 +32,7 @@ const Message = database.define('Message', {
         type: Sequelize.STRING,
         allowNull: false,
     },
-    recievedOn : {
+    receivedOn : {
         type: Sequelize.STRING,
         allowNull: false,
     },
