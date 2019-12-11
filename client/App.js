@@ -13,12 +13,14 @@ import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("db.db");
 
 console.disableYellowBox = true;
+console.ignoredYellowBox = true;
+console.warn = function(){}
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      User: "",
+      User: null,
       display: false,
     };
   };
@@ -131,7 +133,7 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <ChatModal
-          socket={this.props.socket}
+          socket={this.socket}
           display={this.state.display}
           closeDisplay={() => this.setState({ display: false })}
         />

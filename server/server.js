@@ -47,7 +47,7 @@ io.on('connection', function (socket) {
       db.Message.create(data).then((message)=>{
         console.log('New message send directly to client.')
         io.to(connectedClient[data.to]).emit('receive_msg', message)
-        io.from(connectedClient[data.from]).emit('receive_msg', message)
+        io.to(connectedClient[data.from]).emit('receive_msg', message)
       }).catch((error) =>{
         console.error(error)
       })
@@ -55,7 +55,7 @@ io.on('connection', function (socket) {
     else{
       db.Message.create(data).then((message)=>{
         console.log('New message queued in database.')
-        io.from(connectedClient[data.from]).emit('receive_msg', message)
+        io.to(connectedClient[data.from]).emit('receive_msg', message)
       }).catch((error) =>{
         console.error(error)
       })

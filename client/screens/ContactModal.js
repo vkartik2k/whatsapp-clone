@@ -37,7 +37,7 @@ export default class ContactModal extends React.Component {
   }
 
   renderItem = ({ item }) => (
-    <Contact socket={this.props.socket} name={item.firstName + " " + (item.lastName ? item.lastName : "")} lastMsg={"Hello"} chatTime={"21:56"} />
+    <Contact socket={this.props.socket} name={item.phoneNumbers[0]} lastMsg={"Hello"} chatTime={"21:56"} />
   );
 
   render() {

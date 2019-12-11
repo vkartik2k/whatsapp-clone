@@ -38,7 +38,7 @@ export default class ChatModal extends React.Component {
     this.state = {
       User: null,
       isLoading: false,
-      currentMsg : "",
+      currentMsg : '',
       messages: []
     }
   }
@@ -87,9 +87,12 @@ export default class ChatModal extends React.Component {
     });
   }
 
-  _sendMsg() {
+  _sendMsg = () => {
     console.log("ChatModal.js :: You asked to send message");
-    console.log("Message : " + this.state.currentMsg);
+    console.log("Message : ");
+    console.log(this.state.currentMsg);
+
+    this.state.currentMsg = ''
     this.props.socket.emit('send_msg', {
       from : this.state.User,
       to : this.props.name,
@@ -146,7 +149,7 @@ export default class ChatModal extends React.Component {
                 <TextInput
                   style={styles.input}
                   placeholder="Type a message" 
-                  onChangeText={(currentMsg) => this.setState({currentMsg})}
+                  onChangeText={(text) => this.setState({currentMsg :text})}
                 />
                 <Image style={styles.camIcon} source={require('../assets/camera.png')} />
               </View>
