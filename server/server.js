@@ -13,20 +13,18 @@ const io = socketio(server)
 app.use(express.json())
 app.use(express.urlencoded({ extenstion: true }))
 
+let connectedClient = {}
 
-console.log(io.sockets.clients());
 io.on('connection', function (socket) {
   socket.on('connected', function (data) {
     console.log('New device connected with number '+data.phone)
+    connectedClient[data.phone] = socket.id
     db.Message.findAll({
       where:{
         to : data.phone,
         receivedOn : '',
       }
     }).then((d)=>{
-      d.forEach((obj)=>{
-        socket.emit('receive_msg', obj)
-      })
       db.Message.update({
         receivedOn : Date.now()
       },{
@@ -35,16 +33,33 @@ io.on('connection', function (socket) {
           receivedOn : '',
         }
       })
+      d.forEach((obj)=>{
+        socket.emit('receive_msg', obj)
+      })
     })
     console.log('All undelivered messages are now delivered to '+ data.phone)
   })
 
   socket.on('send_msg', function(data){
-    db.Message.create(data).then((message)=>{
-      console.log('New message added to database!')
-    }).catch((error) =>{
-      console.error(error)
-    })
+    let arr = Object.keys(io.sockets.clients().connected)
+    if(arr.includes(connectedClient[data.to])){
+      data.receivedOn = Date.now()
+      db.Message.create(data).then((message)=>{
+        console.log('New message send directly to client.')
+        io.to(connectedClient[data.to]).emit('receive_msg', message)
+        io.from(connectedClient[data.from]).emit('receive_msg', message)
+      }).catch((error) =>{
+        console.error(error)
+      })
+    }
+    else{
+      db.Message.create(data).then((message)=>{
+        console.log('New message queued in database.')
+        io.from(connectedClient[data.from]).emit('receive_msg', message)
+      }).catch((error) =>{
+        console.error(error)
+      })
+    }
   })
 })
 

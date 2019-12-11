@@ -1,4 +1,4 @@
-const Sequelize = require("sequelize")
+const Sequelize = require('sequelize')
 
 const database = new Sequelize('whatsapp', 'root', 'SYSADMIN@1234!',{
     host : 'localhost',
@@ -70,7 +70,7 @@ const User = database.define('User', {
 })
 
 database.sync()
-    .then(() => console.log("DATABASE HAS BE SYNCED."))
-    .catch((err) => console.error("PROBLEM IN SYNCING DATABASE."))
+    .then(() => console.log('DATABASE HAS BE SYNCED.'))
+    .catch((err) => console.error('PROBLEM IN SYNCING DATABASE.'))
 
 exports = module.exports = {Message, User}

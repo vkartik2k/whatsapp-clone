@@ -1,4 +1,4 @@
-const route = require("express").Router();
+const route = require('express').Router()
 const db = require('../database')
 
 route.post('/register', function (req, res) {
@@ -40,10 +40,10 @@ route.post('/register', function (req, res) {
       res.send({
         status: 404,
         message: err.toString()
-      });
+      })
     })
     }
-  });
-});
+  })
+})
 
-module.exports = route;
+module.exports = route

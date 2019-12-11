@@ -16,7 +16,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      User: null,
+      User: "",
     };
   }
 
@@ -77,7 +77,7 @@ export default class App extends React.Component {
         this.socket.emit('connected', {
           phone: this.state.User
         })
-        console.log("Emitted Connect With Device Number :"+this.state.User)
+        console.log("Emitted Connect With Device Number :" + this.state.User)
       }
     } catch (error) {
       console.error(error)
@@ -89,17 +89,17 @@ export default class App extends React.Component {
     this._createDb();
 
     this.socket = io('http://192.168.43.161:3000', {
-      transports: ['websocket']
+      transports: ['websocket'],
     });
 
     this.socket.on('receive_msg', function (message) {
       db.transaction(
         tx => {
-          // tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 
-          // [message.mid, message.content, message.to, message.from, message.deliveredOn, message.receivedOn, message.readOn]);
-          // tx.executeSql("SELECT * FROM  message", [], (_, { rows }) =>
-          //   console.log(rows)
-          // );
+          tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 
+          [message.mid, message.content, message.to, message.from, message.deliveredOn, message.receivedOn, message.readOn]);
+          tx.executeSql("SELECT * FROM  message", [], (_, { rows }) =>
+            console.log(rows)
+          );
           if(message.from!== this.state.User){
             tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`, 
             [message.from, message.content, message.receivedOn , 0]);
@@ -123,7 +123,7 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         {
-          this.state.User !== null ? <View><Header /><Chat socket={this.socket}/></View> : <Signup _storeData={this._storeData} />
+          this.state.User !== null ? <View><Header /><Chat socket={this.socket} /></View> : <Signup _storeData={this._storeData} />
         }
       </View>
     )

@@ -53,10 +53,6 @@ export default class ChatModal extends React.Component {
       const value = await AsyncStorage.getItem('User');
       if (value !== '' && value != null) {
         this.setState({ User: value });
-        this.socket.emit('connected', {
-          phone: this.state.User
-        })
-        console.log("Emitted Connect With Device Number :"+this.state.User)
       }
     } catch (error) {
       console.error(error)
