@@ -37,10 +37,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#075E54',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 60,
+    height: 88,
     width: width,
     paddingLeft: 10,
     paddingRight: 10,
+    paddingTop: 28,
   },
   btnContainer: {
     flexDirection: 'row',

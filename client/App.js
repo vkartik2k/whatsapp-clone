@@ -1,11 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { AsyncStorage } from 'react-native';
 import io from 'socket.io-client';
 
 import Header from './components/Header'
 import Chat from './screens/Chat'
 import Signup from './screens/Signup'
+import ChatModal from './screens/ContactModal'
 
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("db.db");
@@ -17,7 +19,12 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       User: "",
+      display: false,
     };
+  };
+
+  _onPressButton = () => {
+    this.setState({ display: true });
   }
 
   _createDb = () => {
@@ -58,7 +65,7 @@ export default class App extends React.Component {
     }, function () {
       console.log("Create message Successful!")
     });
-  }
+  };
 
   _storeData = async (phone) => {
     try {
@@ -96,16 +103,16 @@ export default class App extends React.Component {
       console.log("The Hell why I am not called!")
       db.transaction(
         tx => {
-          tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 
-          [message.mid, message.content, message.to, message.from, message.deliveredOn, message.receivedOn, message.readOn]);
+          tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [message.mid, message.content, message.to, message.from, message.deliveredOn, message.receivedOn, message.readOn]);
           tx.executeSql("SELECT * FROM  message", [], (_, { rows }) =>
             console.log(rows)
           );
-          if(message.from!== this.state.User){
-            tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`, 
-            [message.from, message.content, message.receivedOn , 0]);
-            tx.executeSql(`UPDATE recent SET unreadCount = unreadCount + 1 WHERE sendFrom=?`, 
-            [message.from]);
+          if (message.from !== this.state.User) {
+            tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`,
+              [message.from, message.content, message.receivedOn, 0]);
+            tx.executeSql(`UPDATE recent SET unreadCount = unreadCount + 1 WHERE sendFrom=?`,
+              [message.from]);
             tx.executeSql("SELECT * FROM  recent", [], (_, { rows }) =>
               console.log(rows)
             );
@@ -118,17 +125,30 @@ export default class App extends React.Component {
     })
     // AsyncStorage.setItem('User', '');
     this._retrieveData();
-  }
+  };
 
   render() {
     return (
       <View style={styles.container}>
+        <ChatModal
+          socket={this.props.socket}
+          display={this.state.display}
+          closeDisplay={() => this.setState({ display: false })}
+        />
         {
           this.state.User !== null ? <View><Header /><Chat socket={this.socket} /></View> : <Signup _storeData={this._storeData} />
         }
+        <View style={styles.allCC}>
+          <TouchableWithoutFeedback onPress={this._onPressButton}>
+            <View>
+              <Image style={styles.allContacts} source={require("./assets/mike.png")} />
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
     )
-  }
+  };
+
 }
 
 const styles = StyleSheet.create({
@@ -136,6 +156,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    paddingTop: 28,
   },
+  allContacts: {
+    height: 50,
+    width: 50,
+  },
+  allCC: {
+    position: 'absolute',
+    height: 50,
+    width: 50,
+    bottom: 20,
+    right: 20,
+    borderRadius: 25,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.20,
+    shadowRadius: 1.41,
+    elevation: 4,
+  }
 });
