@@ -93,6 +93,7 @@ export default class App extends React.Component {
     });
 
     this.socket.on('receive_msg', function (message) {
+      console.log("The Hell why I am not called!")
       db.transaction(
         tx => {
           tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)", 

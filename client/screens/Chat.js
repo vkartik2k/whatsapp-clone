@@ -16,29 +16,29 @@ export default class Chat extends React.Component {
     };
   }
 
-  loadCurrentChats = () => {
+  _loadCurrentChats = () => {
     db.transaction(tx => {
       tx.executeSql(
         `SELECT * FROM recent ORDER BY chatTime DESC;`,
         [],
         (_, { rows: { _array } }) => {
-          this.setState({ contacts: _array})
+          this.setState({ contacts: _array })
           console.log("Chat.js :: ")
           console.log(_array)
         }
       );
-    },function(err){
+    }, function (err) {
       console.error(err)
-    },function(){
-      console.log("Chats.js :: all chats are fetched from db");
-      this.setState({ isLoading: false, contacts: contacts });
-      console.log(this.state.contacts);
+    }, function () {
+      console.log("Chats.js :: All chats are fetched from db");
     });
+    this.setState({ isLoading: false });
+    console.log(this.state.contacts);
   }
 
   componentDidMount() {
     this.setState({ isLoading: true });
-    this.loadCurrentChats();
+    this._loadCurrentChats();
   }
 
   renderItem = ({ item }) => (
