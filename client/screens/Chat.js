@@ -31,9 +31,9 @@ export default class Chat extends React.Component {
       console.error(err)
     }, function () {
       console.log("Chats.js :: All chats are fetched from db");
+      this.setState({ isLoading: false });
     });
-    this.setState({ isLoading: false });
-    console.log(this.state.contacts);
+    
   }
 
   componentDidMount() {

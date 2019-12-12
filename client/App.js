@@ -102,7 +102,7 @@ export default class App extends React.Component {
     });
 
     this.socket.on('receive_msg', function (message) {
-      console.log("The Hell why I am not called!")
+      console.log("Wohh! Socket for receive_msg is called means it has been deleivered!")
       db.transaction(
         tx => {
           tx.executeSql("INSERT INTO message VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -110,15 +110,13 @@ export default class App extends React.Component {
           tx.executeSql("SELECT * FROM  message", [], (_, { rows }) =>
             console.log(rows)
           );
-          if (message.from !== this.state.User) {
-            tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`,
-              [message.from, message.content, message.receivedOn, 0]);
-            tx.executeSql(`UPDATE recent SET unreadCount = unreadCount + 1 WHERE sendFrom=?`,
-              [message.from]);
-            tx.executeSql("SELECT * FROM  recent", [], (_, { rows }) =>
-              console.log(rows)
-            );
-          }
+          tx.executeSql(`INSERT OR REPLACE INTO recent VALUES(?, ?, ?, ? )`,
+            [message.from, message.content, message.receivedOn, 0]);
+          tx.executeSql(`UPDATE recent SET unreadCount = unreadCount + 1 WHERE sendFrom=?`,
+            [message.from]);
+          tx.executeSql("SELECT * FROM  recent", [], (_, { rows }) =>
+            console.log(rows)
+          );
         },
         function (err) {
           console.error(err)
