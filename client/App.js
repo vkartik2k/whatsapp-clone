@@ -14,7 +14,7 @@ const db = SQLite.openDatabase("db.db");
 
 console.disableYellowBox = true;
 console.ignoredYellowBox = true;
-console.warn = function(){}
+console.warn = function () { }
 
 export default class App extends React.Component {
   constructor(props) {
@@ -138,15 +138,20 @@ export default class App extends React.Component {
           closeDisplay={() => this.setState({ display: false })}
         />
         {
-          this.state.User !== null ? <View><Header /><Chat socket={this.socket} /></View> : <Signup _storeData={this._storeData} />
-        }
-        <View style={styles.allCC}>
-          <TouchableWithoutFeedback onPress={this._onPressButton}>
-            <View>
-              <Image style={styles.allContacts} source={require("./assets/mike.png")} />
+          this.state.User !== null
+            ? <View>
+              <Header />
+              <Chat socket={this.socket} />
+              <View style={styles.allCC}>
+                <TouchableWithoutFeedback onPress={this._onPressButton}>
+                  <View>
+                    <Image style={styles.allContacts} source={require("./assets/mike.png")} />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
             </View>
-          </TouchableWithoutFeedback>
-        </View>
+            : <Signup _storeData={this._storeData} />
+        }
       </View>
     )
   };

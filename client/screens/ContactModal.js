@@ -29,6 +29,7 @@ export default class ContactModal extends React.Component {
   componentDidMount() {
     this.setState({ isLoading: true });
     this.loadContacts();
+    
   }
 
   handleBackButtonClick() {
@@ -37,7 +38,7 @@ export default class ContactModal extends React.Component {
   }
 
   renderItem = ({ item }) => (
-    <Contact socket={this.props.socket} name={item.phoneNumbers[0]} lastMsg={"Hello"} chatTime={"21:56"} />
+    <Contact socket={this.props.socket} name={item.phoneNumbers[0].number} lastMsg={"Hello"} chatTime={"21:56"} />
   );
 
   render() {

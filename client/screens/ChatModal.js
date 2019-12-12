@@ -85,14 +85,13 @@ export default class ChatModal extends React.Component {
       this.setState({ isLoading: false });
       console.log(this.state.messages);
     });
+    
   }
 
   _sendMsg = () => {
     console.log("ChatModal.js :: You asked to send message");
     console.log("Message : ");
     console.log(this.state.currentMsg);
-
-    this.state.currentMsg = ''
     this.props.socket.emit('send_msg', {
       from : this.state.User,
       to : this.props.name,
@@ -101,6 +100,7 @@ export default class ChatModal extends React.Component {
       receivedOn: '',
       readOn : ''
     });
+    this.state.currentMsg = ''
   }
 
   componentDidMount() {
